@@ -8,6 +8,12 @@ import { db } from "@/lib/db";
 export async function POST(req: Request) {
   try {
     const { name, imageUrl } = await req.json();
+
+    // Validate the request body
+    if (!name || !imageUrl) {
+      return new NextResponse("Name and image URL are required", { status: 400 });
+    }
+
     const profile = await currentProfile();
 
     if (!profile) {
@@ -21,21 +27,23 @@ export async function POST(req: Request) {
         imageUrl,
         inviteCode: uuidv4(),
         channels: {
-          create: [
-            { name: "general", profileId: profile.id }
-          ]
+          create: [{ name: "general", profileId: profile.id }]
         },
         members: {
-          create: [
-            { profileId: profile.id, role: MemberRole.ADMIN }
-          ]
+          create: [{ profileId: profile.id, role: MemberRole.ADMIN }]
         }
       }
     });
 
-    return NextResponse.json(server);
+    // Optionally return specific details
+    return NextResponse.json({
+      id: server.id,
+      name: server.name,
+      imageUrl: server.imageUrl,
+      inviteCode: server.inviteCode,
+    });
   } catch (error) {
-    console.log("[SERVERS_POST]", error);
+    console.error("[SERVERS_POST]", error); // Log the complete error object
     return new NextResponse("Internal Error", { status: 500 });
   }
 }

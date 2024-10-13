@@ -1,4 +1,3 @@
-import { redirectToSignIn } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 
 import { db } from "@/lib/db";
@@ -8,6 +7,7 @@ import { ChatHeader } from "@/components/chat/chat-header";
 import { ChatMessages } from "@/components/chat/chat-messages";
 import { ChatInput } from "@/components/chat/chat-input";
 import { MediaRoom } from "@/components/media-room";
+import { auth } from "@clerk/nextjs/server";
 
 interface MemberIdPageProps {
   params: {
@@ -26,7 +26,7 @@ const MemberIdPage = async ({
   const profile = await currentProfile();
 
   if (!profile) {
-    return redirectToSignIn();
+    return auth().redirectToSignIn();
   }
 
   const currentMember = await db.member.findFirst({
@@ -53,7 +53,7 @@ const MemberIdPage = async ({
 
   const otherMember = memberOne.profileId === profile.id ? memberTwo : memberOne;
 
-  return ( 
+  return (
     <div className="bg-white dark:bg-[#313338] flex flex-col h-full">
       <ChatHeader
         imageUrl={otherMember.profile.imageUrl}
@@ -94,7 +94,7 @@ const MemberIdPage = async ({
         </>
       )}
     </div>
-   );
+  );
 }
- 
+
 export default MemberIdPage;

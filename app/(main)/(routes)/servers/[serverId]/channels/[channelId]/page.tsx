@@ -1,4 +1,3 @@
-import { redirectToSignIn } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import { ChannelType } from "@prisma/client";
 
@@ -8,6 +7,7 @@ import { ChatInput } from "@/components/chat/chat-input";
 import { ChatMessages } from "@/components/chat/chat-messages";
 import { MediaRoom } from "@/components/media-room";
 import { db } from "@/lib/db";
+import { auth } from "@clerk/nextjs/server";
 
 interface ChannelIdPageProps {
   params: {
@@ -22,7 +22,7 @@ const ChannelIdPage = async ({
   const profile = await currentProfile();
 
   if (!profile) {
-    return redirectToSignIn();
+    return auth().redirectToSignIn();
   }
 
   const channel = await db.channel.findUnique({
@@ -42,7 +42,7 @@ const ChannelIdPage = async ({
     redirect("/");
   }
 
-  return ( 
+  return (
     <div className="bg-white dark:bg-[#313338] flex flex-col h-full">
       <ChatHeader
         name={channel.name}
@@ -91,7 +91,7 @@ const ChannelIdPage = async ({
         />
       )}
     </div>
-   );
+  );
 }
- 
+
 export default ChannelIdPage;

@@ -6,18 +6,20 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
-model Profile {
-  id String @id @default(uuid())
-  userId String @unique
-  name String
-  imageUrl String @db.Text
-  email String @db.Text
 
-  servers Server[]
-  members Member[]
+model Profile {
+  id       String @id @default(uuid())
+  userId   String @unique
+  name     String
+  imageUrl String @db.Text
+  email    String @db.Text
+
+  servers  Server[]
+  members  Member[]
   channels Channel[]
 
   createdAt DateTime @default(now())
@@ -25,15 +27,15 @@ model Profile {
 }
 
 model Server {
-  id String @id @default(uuid())
-  name String
-  imageUrl String @db.Text
+  id         String @id @default(uuid())
+  name       String
+  imageUrl   String @db.Text
   inviteCode String @unique
 
   profileId String
-  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
-  members Member[]
+  members  Member[]
   channels Channel[]
 
   createdAt DateTime @default(now())
@@ -49,20 +51,20 @@ enum MemberRole {
 }
 
 model Member {
-  id String @id @default(uuid())
+  id   String     @id @default(uuid())
   role MemberRole @default(GUEST)
 
   profileId String
-  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
   serverId String
-  server Server @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  server   Server @relation(fields: [serverId], references: [id], onDelete: Cascade)
 
-  messages Message[]
+  messages       Message[]
   directMessages DirectMessage[]
 
   conversationsInitiated Conversation[] @relation("MemberOne")
-  conversationsReceived Conversation[] @relation("MemberTwo")
+  conversationsReceived  Conversation[] @relation("MemberTwo")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -78,15 +80,15 @@ enum ChannelType {
 }
 
 model Channel {
-  id String @id @default(uuid())
+  id   String      @id @default(uuid())
   name String
   type ChannelType @default(TEXT)
 
   profileId String
-  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
   serverId String
-  server Server @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  server   Server @relation(fields: [serverId], references: [id], onDelete: Cascade)
 
   messages Message[]
 
@@ -98,16 +100,16 @@ model Channel {
 }
 
 model Message {
-  id String @id @default(uuid())
+  id      String @id @default(uuid())
   content String @db.Text
 
   fileUrl String? @db.Text
 
   memberId String
-  member Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  member   Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
 
   channelId String
-  channel Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  channel   Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
 
   deleted Boolean @default(false)
 
@@ -122,28 +124,27 @@ model Conversation {
   id String @id @default(uuid())
 
   memberOneId String
-  memberOne Member @relation("MemberOne", fields: [memberOneId], references: [id], onDelete: Cascade)
+  memberOne   Member @relation("MemberOne", fields: [memberOneId], references: [id], onDelete: Cascade)
 
   memberTwoId String
-  memberTwo Member @relation("MemberTwo", fields: [memberTwoId], references: [id], onDelete: Cascade)
+  memberTwo   Member @relation("MemberTwo", fields: [memberTwoId], references: [id], onDelete: Cascade)
 
   directMessages DirectMessage[]
 
-  @@index([memberTwoId])
-
   @@unique([memberOneId, memberTwoId])
+  @@index([memberTwoId])
 }
 
 model DirectMessage {
-  id String @id @default(uuid())
-  content String @db.Text
+  id      String  @id @default(uuid())
+  content String  @db.Text
   fileUrl String? @db.Text
 
   memberId String
-  member Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  member   Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
 
   conversationId String
-  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 
   deleted Boolean @default(false)
 
