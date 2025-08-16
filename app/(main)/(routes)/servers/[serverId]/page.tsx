@@ -6,14 +6,13 @@ import { db } from "@/lib/db";
 import { auth } from "@clerk/nextjs/server";
 
 interface ServerIdPageProps {
-  params: {
+  params: Promise<{
     serverId: string;
-  }
+  }>
 };
 
-const ServerIdPage = async ({
-  params
-}: ServerIdPageProps) => {
+const ServerIdPage = async (props: ServerIdPageProps) => {
+  const params = await props.params;
   const profile = await currentProfile();
 
   if (!profile) {

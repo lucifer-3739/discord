@@ -19,7 +19,14 @@ export const NavigationSidebar = async () => {
 
   try {
     // Error handling for the database query
-    const servers = await db.server.findMany({
+    type Server = {
+      id: string;
+      name: string;
+      imageUrl: string;
+      // add other fields if needed
+    };
+
+    const servers: Server[] = await db.server.findMany({
       where: {
         members: {
           some: {
@@ -38,7 +45,7 @@ export const NavigationSidebar = async () => {
           className="h-[2px] bg-zinc-300 dark:bg-zinc-700 rounded-md w-10 mx-auto"
         />
         <ScrollArea className="flex-1 w-full">
-          {servers.map((server) => (
+          {servers.map((server: Server) => (
             <div key={server.id} className="mb-4">
               <NavigationItem
                 id={server.id}

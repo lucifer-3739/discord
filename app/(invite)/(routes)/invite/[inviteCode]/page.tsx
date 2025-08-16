@@ -6,14 +6,13 @@ import { currentProfile } from "@/lib/current-profile";
 import { auth } from "@clerk/nextjs/server";
 
 interface InviteCodePageProps {
-  params: {
+  params: Promise<{
     inviteCode: string;
-  };
+  }>;
 };
 
-const InviteCodePage = async ({
-  params
-}: InviteCodePageProps) => {
+const InviteCodePage = async (props: InviteCodePageProps) => {
+  const params = await props.params;
   const profile = await currentProfile();
 
   if (!profile) {

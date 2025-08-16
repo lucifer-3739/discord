@@ -10,15 +10,14 @@ import { db } from "@/lib/db";
 import { auth } from "@clerk/nextjs/server";
 
 interface ChannelIdPageProps {
-  params: {
+  params: Promise<{
     serverId: string;
     channelId: string;
-  }
+  }>
 }
 
-const ChannelIdPage = async ({
-  params
-}: ChannelIdPageProps) => {
+const ChannelIdPage = async (props: ChannelIdPageProps) => {
+  const params = await props.params;
   const profile = await currentProfile();
 
   if (!profile) {
